@@ -184,5 +184,11 @@ $lightGreen: #b9e7e7;
     }
 
     //WRITE
+    .add {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 }
