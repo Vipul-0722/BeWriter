@@ -1,13 +1,16 @@
-import React,{useState} from 'react'
-import { Link } from 'react-router-dom'
+import React,{useContext, useState} from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios';
+import { AuthContext } from '../context/authContext';
 const Login = () => {
 
+  const Navigate=useNavigate();
   const [inputData,setData]=useState({
     username:'',
-    email:'',
     password:''
   });
 
+  const [error,setError]=useState(null);
 
   const handleChange=(e)=>{
     console.log(e.target.name);
@@ -15,9 +18,24 @@ const Login = () => {
   
   }
 
-   
+  const {login}=useContext(AuthContext);
+  const {currentUser}=useContext(AuthContext);
+  
+  console.log(currentUser)
 
-
+  const submitHandle=async (e)=>{
+    e.preventDefault()
+    console.log(inputData)
+    console.log("called");
+    try{
+      await login(inputData);
+       Navigate("/");
+      }
+    catch(err){
+      console.log(err)
+        setError(err)
+    }   
+   } 
 
   return (
     <div className='auth'>
@@ -27,8 +45,8 @@ const Login = () => {
          
         <input type='password' name="password" onChange={handleChange} placeholder='password'  autoComplete='off' ></input>
          
-        <button>Login</button>
-             <p>This is error</p>
+        <button onClick={submitHandle}>Login</button>
+        { error && <p>{error}</p>}
         <span>Don't you have account? <Link to="/register">Register</Link></span>
       </form>
     </div>
