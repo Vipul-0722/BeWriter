@@ -3,6 +3,7 @@ import postRoutes from "./routes/posts.js"
 import authRoutes from "./routes/auth.js"
 import userRoutes from "./routes/users.js"
 import cors from 'cors';
+import cookieParser from "cookie-parser";
 
 const app=express();
 
@@ -17,7 +18,10 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use("/auth",authRoutes)
+app.use(cookieParser());
+
+
+app.use("/auth",authRoutes);
 
 app.listen(3001,()=>{
     console.log("Server Started")
