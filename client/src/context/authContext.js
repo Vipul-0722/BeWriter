@@ -13,10 +13,12 @@ export const AuthContextProvider=({children})=>{
     const login=async(inputs)=>{
        const res=await axios.post("http://localhost:3001/auth/login",inputs);
        setCurrentUser(res.data);  
+       console.log(res);
     } 
     const logout=async(inputs)=>{
-       const res=await axios.post("http://localhost:3001/auth/logout",inputs);
-       setCurrentUser(null);  
+     const res= await axios.post("http://localhost:3001/auth/logout");
+     console.log(res);  
+     setCurrentUser(null);  
     }
 
     useEffect(()=>{
