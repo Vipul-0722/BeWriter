@@ -55,12 +55,28 @@ export const login=(req,res)=>{
       // to let you know weathetr the posyt belong to the same user or not
      
       const {password,...other}=data[0]
-       const token=jwt.sign({id:data[0].id},"jwtkey");
-       
-       res.cookie("access_token",token,{
-        httpOnly:true
-      }).status(200).json(other);
-    })
+     
+
+      const token=jwt.sign({id:data[0].id},"jwtkey");
+      console.log(token); 
+
+        const resData=
+        {
+          ...other,
+          access_token:token
+        }
+      res.cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .status(200)
+      .json(resData);
+  });
+
+
+    //    res.cookie("access_token",token,{
+    //     httpOnly:true
+    //   }).status(200).json(other);
+    // })
 
 }
 

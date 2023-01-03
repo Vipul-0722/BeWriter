@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.js"
 import userRoutes from "./routes/users.js"
 import cors from 'cors';
 import cookieParser from "cookie-parser";
+import multer from "multer";
 
 const app=express();
 
@@ -17,11 +18,15 @@ app.use(cors());
 });
 
 app.use(express.json());
-
 app.use(cookieParser());
 
+const upload = multer({ dest: './uploads/' })
 
+app.post('/upload', upload.single('file'), function (req, res, next) {
+    res.status(200).json("Image uploaded")
+})
 app.use("/auth",authRoutes);
+app.use("/posts",postRoutes);
 
 app.listen(3001,()=>{
     console.log("Server Started")
