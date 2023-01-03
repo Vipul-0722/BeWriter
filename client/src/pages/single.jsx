@@ -1,40 +1,78 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Edit from "../img/edit.png"
 import Delete from "../img/delete.png"
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Menu from '../components/Menu.jsx'
-  
-const single = () => {
+import axios from 'axios'  
+import moment from "moment"
+import { AuthContext } from '../context/authContext'
+
+const Single = () => {
+
+const {currentUser}=useContext(AuthContext);
+
+ const [post,setPost]=useState({}); 
+
+ const location=useLocation()
+
+ const postId=location.pathname.split("/")[2];
+
+const navigate=useNavigate();
+
+useEffect(()=>{
+  const fetchData= async()=>{
+      try{
+         const res=await axios.get(`http://localhost:3001/posts/${postId}`)     
+         console.log(res);
+         setPost(res.data)
+        }catch(err){
+        console.log(err)
+      }
+  }
+  fetchData();
+},[postId])
+
+const deleteHandler=async(e)=>{
+      const {access_token}= currentUser;
+      console.log(access_token);
+       try{
+         await axios.delete(`http://localhost:3001/posts/${postId}`,
+          {
+            data:{
+              access_token:access_token
+            }
+          });
+         navigate("/")     
+        }catch(err){
+        console.log(err)
+      }
+   
+}
+
   return (
     <div className='single'>
       <div className='content'>
-          <img src="https://images.pexels.com/photos/7008010/pexels-photo-7008010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt='profile'></img>
+          <img src={post?.img} alt='profile'></img>
           <div className='user'>
-                <img src="https://images.squarespace-cdn.com/content/v1/5cf0d08d5fc69d000172462a/1622920319069-Z4F95L48OSY72TJM9RJY/Ollie+Business+LinkedIn+Headshot+Photo.jpg" alt='profile'></img>
+              {post?.userImg &&  <img src={post?.userImg} alt='profile'></img>}
             <div className='info'>
                 <span>Vipul Gaikwad</span>
-                <p>Posted 2 days ago</p>
+                <p>Posted {moment(post.date).fromNow()}</p>
             </div>
+            {currentUser.username===post.username &&
             <div className='edit'>
                <Link to={`/write?edit=2`}>
                  <img src={Edit} alt='edit'></img>
               </Link>
-                 <img src={Delete} alt='edit'></img>
+                 <img src={Delete} onClick={deleteHandler} alt='edit'></img>
              </div>    
+            }
             </div>
-         <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit</h1>   
-          <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. A possimus excepturi aliquid nihil cumque ipsam facere aperiam at! Ea dolorem ratione sit debitis deserunt repellendus numquam ab vel perspiciatis corporis 
-             Lorem, ipsum dolor sit amet consectetur adipisicing elit. A possimus excepturi aliquid nihil cumque ipsam facere aperiam at! Ea dolorem ratione sit debitis deserunt repellendus numquam ab vel perspiciatis corporis! 
-             Lorem, ipsum dolor sit amet consectetur adipisicing elit. A possimus excepturi aliquid nihil cumque ipsam facere aperiam at! Ea dolorem ratione sit debitis deserunt repellendus numquam ab vel perspiciatis corporis!
-             Lorem, ipsum dolor sit amet consectetur adipisicing elit. A possimus excepturi aliquid nihil cumque ipsam facere aperiam at! Ea dolorem ratione sit debitis deserunt repellendus numquam ab vel perspiciatis corporis!
-             Lorem, ipsum dolor sit amet consectetur adipisicing elit. A possimus excepturi aliquid nihil cumque ipsam facere aperiam at! Ea dolorem ratione sit debitis deserunt repellendus numquam ab vel perspiciatis corporis!
-             Lorem, ipsum dolor sit amet consectetur adipisicing elit. A possimus excepturi aliquid nihil cumque ipsam facere aperiam at! Ea dolorem ratione sit debitis deserunt repellendus numquam ab vel perspiciatis corporis!
-             Lorem, ipsum dolor sit amet consectetur adipisicing elit. A possimus excepturi aliquid nihil cumque ipsam facere aperiam at! Ea dolorem ratione sit debitis deserunt repellendus numquam ab vel perspiciatis corporis!
-             Lorem, ipsum dolor sit amet consectetur adipisicing elit. A possimus excepturi aliquid nihil cumque ipsam facere aperiam at! Ea dolorem ratione sit debitis deserunt repellendus numquam ab vel perspiciatis corporis!</p>         
-      </div>
-       <Menu/>
+         <h1>{post.title}</h1>   
+          <p>{post.desc}</p> </div>
+       <Menu cat={post.category}/>
     </div>
   )
 }
 
-export default single
+export default Single
